@@ -5,6 +5,7 @@ import TreeView from './TreeView';
 import ReactUiTree from './ReactUiTree';
 // import Tree from 'react-ui-tree'
 // import tree from './tree';
+import TreeViewer from './myTreeView/TreeViewer';
 
 class App extends Component {
 
@@ -20,6 +21,7 @@ class App extends Component {
         </p>
         <TreeView />
         {/* <ReactUiTree/> */}
+        < TreeViewer />
       </div>
     );
   }

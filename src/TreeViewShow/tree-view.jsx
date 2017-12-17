@@ -4,6 +4,11 @@ import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 import './tree-view.less';
 
 export default class TreeView extends React.Component {
+  constructor(props){
+    super(props);
+    this.nodeClick = this.nodeClick.bind(this);
+  }
+
   render(){
     // get the root nodes
     const root = this.state ? this.state.root : null;
@@ -11,6 +16,7 @@ export default class TreeView extends React.Component {
     //roots were not retrieved ?
     if (!root) {
       const self = this;
+      //this.loadNodes(null)
       this.loadNodes(null)
       .then(res => self.setState({ root: res }));
       return null;
@@ -36,7 +42,7 @@ export default class TreeView extends React.Component {
 
     // create nodes wrapper when nodes are resolved
     const self = this;
-    return res.the(items => {
+    return res.then(items => {
       if (!items) {
         return [];
       }
@@ -129,5 +135,50 @@ export default class TreeView extends React.Component {
 
     var className = 'fa fa-' + icon + 'fa-fw';
     return <i className={className} />;
+  }
+
+  nodeClick(evt) {
+    const key = evt.currentTarget.getAttribute('data-item');
+
+    let lst =  this.state.root;
+    let node = null;
+
+    key.split('.').forEach(index => {
+      node = lst[Number(index)];
+      lst = node.chidren;
+    });
+
+    if (node.state === 'collapsed') {
+      this.expandNode(node);
+    }else{
+      this.collapseNode(node);
+    }
+  }
+
+  expandNode(node) {
+    // children are not loaded?
+    if(!node.children){
+      node.state = 'expanding';
+      this.forceUpdate();
+
+      // load the children
+      const self = this;
+      this.loadNodes(node)
+        .then(res => {
+            node.state = 'expanded';
+            node.children =  res;
+            // force tree to show the new expanded node
+            self.forceUpadate();
+        })
+    }else {
+      node.state = 'expanded';
+      // force tree to show expanded node
+      this.forceUpdate();
+    }
+  }
+
+  collapseNode(node) {
+    node.state = 'collapsed';
+    this.forceUpdate();
   }
 }
