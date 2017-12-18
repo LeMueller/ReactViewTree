@@ -17,9 +17,9 @@ class App extends Component {
           <h1 className="App-title">Welcome to React</h1>
         </header>
         <p className="App-intro">
-          Test of <code>react-treebeard</code> React.
+          Test of <code>react-TreeViewer</code>
         </p>
-        <TreeView />
+        {/* <TreeView /> */}
         {/* <ReactUiTree/> */}
         < TreeViewer />
       </div>

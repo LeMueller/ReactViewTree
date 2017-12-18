@@ -19,62 +19,82 @@ export default class TreeNode extends Component {
   constructor(props){
     super(props);
 
-    // this.addNodeToState = this.addNodeToState.bind(this);
-    this.convertDataToNode = this.convertDataToNode.bind(this);
-    this.renderNodes = this.renderNodes.bind(this);
-  }
-  state = {
-    node: [],
-    targetId: '',
+    this.state = {
+      nodes: [],
+      targetId: '',
+    }
+
+    this.dataController = {
+      "root": [
+        {"id": "A", "children":[]},
+        {"id": "B", "children":[
+          {"id": "BA", "children":[]},
+          {"id": "BB", "children":[
+            {"id": "BBA", "children":[]},
+            {"id": "BBB", "children":[]}
+          ]}
+        ]}
+      ]
+    };
+
+    // this.convertDataToHtml = this.convertDataToHtml.bind(this);
   }
 
-
-  // addNodeToState(data){
-  //   this.convertDataToNode(data);
-  //   this.setState({
-  //     node: nodeArr,
+  // convertDataToHtml(data){
+  //   console.log(this.dataController);
+  //   console.log('dataController');
+  //   if(!data){
+  //     return
+  //   }
+  //   data.map((dataItem) => {
+  //     console.log(dataItem);
+  //     return <div id={dataItem.Id}>{dataItem.Id}</div>
+  //     if(dataItem.children.length > 0){
+  //       this.convertDataToHtml(dataItem.children);
+  //     }
   //   });
   // }
-
-  convertDataToNode(data){
-    console.log(data);
-    if(!data){
-      return
-    }
-    data.map((dataItem) => {
-      const node = "<node id= " + dataItem.Id + "/>";
-      this.setState({
-        node: this.state.node.push(node),
-      })
-      console.log('node in convert');
-      console.log(this.state);
-      if(dataItem.children.length > 0){
-        this.convertDataToNode(dataItem.children);
-      }
-    });
+  updateState(newState){
+    this.setState({
+      nodes: this.dataController.root,
+    })
   }
 
-  renderNodes(){
-    console.log("note in render");
-    console.log(this.state);
+  renderNodes(nodes){
+    return nodes.map(node => this.renderNode(node));
+  }
+
+  renderNode(node) {
+    const { id, children = [] } = node;
+
     return (
-      this.state.node.map((node) => {
-        <div id = {node.Id}>{node.Id}</div>
-      })
+      <div key = {node.id}>
+        <div className="label">{id}</div>
+        {this.maybeRenderChidlren(children)}
+      </div>
     )
   }
 
-  componentDidMount(){
+  maybeRenderChidlren(children) {
+    if (children.length == 0) {
+      return false;
+    }
 
-    this.convertDataToNode(dataForm.root);
-    console.log('did mount');
-    console.log(this.state);
+    return (
+      <div className="children">{this.renderNodes(children)}</div>
+    );
+  }
+
+  componentWillMount(){
+    this.updateState();
   }
 
   render(){
-    console.log('treeViewer render');
-    console.log(this.state);
-    return this.renderNodes();
+    return(
+      <div>
+        {this.renderNodes(this.state.nodes)}
+      </div>
+    )
   }
 
 }
